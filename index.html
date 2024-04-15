@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typist</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .myCanvas {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
     <canvas id="myCanvas" width="800" height="600"></canvas>
@@ -73,7 +82,7 @@
             // Paint count pixels from top left and wrap at width
             let x = 0;
             let y = 0;
-            const pixelSize = 4;
+            const pixelSize = 16;
             for (let i = 0; i < count; i++) {
                 ctx.fillStyle = getRandomColor();
                 ctx.fillRect(x, y, pixelSize, pixelSize);
@@ -121,7 +130,7 @@
             const downloadLink = document.createElement('a');
             downloadLink.href = videoURL;
             downloadLink.download = 'animation' + fileextension;
-            downloadLink.click();
+            //downloadLink.click();
         };
 
         recorder.start();
@@ -137,7 +146,7 @@
         }
 
         // Example: Stop recording after 10 seconds
-        setTimeout(stopRecording, 2000);
+        setTimeout(stopRecording, 20000);
     </script>
 </body>
 </html>
