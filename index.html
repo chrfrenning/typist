@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typist</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+
+    <script>
+        // Test compat
+
+        const types = [
+        'video/webm; codecs=vp8', // WebM with VP8
+        'video/webm; codecs=vp9', // WebM with VP9
+        'video/webm; codecs=vp8,opus', // WebM with VP8 and Opus
+        'video/webm; codecs=vp9,opus', // WebM with VP9 and Opus
+        'video/mp4; codecs="avc1.42E01E"', // MP4 with H.264
+        'video/mp4; codecs="avc1.42E01E, mp4a.40.2"' // MP4 with H.264 and AAC
+        ];
+
+        types.forEach(type => {
+        console.log(`${type} is ${MediaRecorder.isTypeSupported(type) ? '' : 'not '}supported`);
+        });
+
+        // Utility stuff
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        
+
+        // Animation stuff
+
+        let run = true;
+        let start, previousTimeStamp;
+        let count = 0;
+
+        animationLoop = (ts) => {
+            const canvas = document.getElementById('myCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight;
+
+            // Calculate time
+            if ( start === undefined ) {
+                start = ts;
+                previousTimeStamp = ts;
+            }
+            const elapsed = ts - start;
+            const delta = ts - previousTimeStamp;
+            previousTimeStamp = ts;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // fill entire canvas with red
+            ctx.fillStyle = 'red';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Count a bit
+            count += 1;
+            if (count > canvas.width * canvas.height) {
+                count = 0;
+            }
+
+            // Paint count pixels from top left and wrap at width
+            let x = 0;
+            let y = 0;
+            const pixelSize = 4;
+            for (let i = 0; i < count; i++) {
+                ctx.fillStyle = getRandomColor();
+                ctx.fillRect(x, y, pixelSize, pixelSize);
+                x += pixelSize;
+                if (x >= canvas.width) {
+                    x = 0;
+                    y += pixelSize;
+                }
+            }
+
+            
+            // Request next update
+            if ( run )
+                requestAnimationFrame(animationLoop);
+        }
+
+        startAnimation = () => {
+            requestAnimationFrame(animationLoop);
+        }
+
+        stopAnimation = () => {
+            run = false;
+        }
+
+
+        // Recorder
+
+        const mimetype = 'video/webm';
+        const fileextension = ".webm";
+        const canvas = document.getElementById('myCanvas');
+        const stream = canvas.captureStream(30); // 30 FPS
+
+        let chunks = [];
+        const recorder = new MediaRecorder(stream, { mimeType: mimetype });
+
+        recorder.ondataavailable = (e) => {
+            chunks.push(e.data);
+        };
+
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: mimetype });
+            const videoURL = URL.createObjectURL(blob);
+
+            // You can download the video or embed it in the page
+            const downloadLink = document.createElement('a');
+            downloadLink.href = videoURL;
+            downloadLink.download = 'animation' + fileextension;
+            downloadLink.click();
+        };
+
+        recorder.start();
+
+        // Assuming you have a function to start your animation
+        startAnimation();
+
+        // Function to end recording after a specific time or event
+        function stopRecording() {
+            recorder.stop();
+            // Optional: Stop your animation if it loops infinitely
+            stopAnimation();
+        }
+
+        // Example: Stop recording after 10 seconds
+        setTimeout(stopRecording, 2000);
+    </script>
+</body>
+</html>
