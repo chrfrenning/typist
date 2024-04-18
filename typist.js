@@ -1,7 +1,7 @@
 const typeSpeed = 40;
 let typeQueue = [];
 
-typeSomething = () => {
+doType = () => {
     if (typeQueue.length > 0) {
 
         if ( typeQueue[0].onfinal != undefined ) {
@@ -9,12 +9,19 @@ typeSomething = () => {
             typeQueue[0].onfinal();
             typeQueue.shift();
 
+            const event = new Event('typist-done');
+            document.dispatchEvent(event);
+
         } else if ( typeQueue[0].type === 'insert' ) {
 
             var {type, copy, target} = typeQueue[0];
             target.appendChild(copy);
             typeQueue.shift();
-            typeSomething();
+
+            const event = new Event('typist-update');
+            document.dispatchEvent(event);
+
+            doType();
 
         } else {
 
@@ -31,7 +38,6 @@ typeSomething = () => {
             var lineHeight = computedStyle.getPropertyValue('line-height');
             var height = parseInt(lineHeight) || parseInt(fontSize);
             height = Math.floor(height * 0.8);
-            console.log(height);
 
             if ( text.parentNode.querySelector("#cursor") == null ) {
                 const dot = document.createElement("span");
@@ -55,8 +61,11 @@ typeSomething = () => {
                 }
             }
 
+            const event = new Event('typist-update');
+            document.dispatchEvent(event);
+
             randomDelay = Math.abs(typeSpeed * (Math.cos(text.textContent.length)) + (typeSpeed ** Math.random()));
-            setTimeout(typeSomething, randomDelay);
+            setTimeout(doType, randomDelay);
 
         }
     }
@@ -77,7 +86,7 @@ anyParentHasAttribute = (node, attr) => {
 duplicateNode = (node, target) => {
     var copy = node.cloneNode(false);
     
-    if ( node.nodeName === '#text' && anyParentHasAttribute(node, 'typist') ) {
+    if ( node.nodeName === '#text' && anyParentHasAttribute(node, 'type-effect') ) {
         var string = node.textContent;
         
         var text = document.createTextNode("");
@@ -99,16 +108,34 @@ duplicateNode = (node, target) => {
     }
 }
 
-var node = document.getElementById('capture');
-node.childNodes.forEach(function(child) {
-    var target = document.getElementById('target');
-    duplicateNode(child, target);       
-});
-
-onfinal = () => {
-    console.log("Done!");
+setupTypist = (node) => {
+    node.childNodes.forEach(function(child) {
+        duplicateNode(child, node);       
+    });
+    node.replaceChildren();
+    
+    
+    onfinal = () => {
+        // console.log("Done!");
+    }
+    
+    typeQueue.push( {onfinal} );
 }
 
-typeQueue.push( {onfinal} );
+startTypist = () => {
+    const event = new Event('typist-start');
+    document.dispatchEvent(event);
 
-typeSomething();
+    doType();
+}
+
+// Start the typist on all elements attributed typist
+// and type all elements marked with type-effect attribute
+
+document.addEventListener("DOMContentLoaded", function() {
+    var elements = document.querySelectorAll("[typist]");
+    elements.forEach(function(element) {
+        setupTypist(element);
+        document.dispatchEvent(new Event("typist-ready"));
+    });
+});

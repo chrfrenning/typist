@@ -9,16 +9,22 @@
 
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="typist.css">
+    <script src="typist.js"></script> 
     
     <style>
         #capture, #target {
             padding: 10px;
             background: rgb(33,33,33); 
-            width: 1024px;
-            height: 768px;
+            width: 100%;
+            height: 100vh;
+            min-height: 100vh;
+            overflow: hidden;
         }
         .pastedimg {
             width: 300px;
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
         h4 {
             font-family: Arial;
@@ -27,11 +33,13 @@
             margin-top: 15px;
             color: white;
         }
+        p, ul {
+            margin-top: 10px;
+        }
         p, ul, li {
             font-family: Arial;
             font-weight: 400;
             font-size: 16px;
-            margin-top: 10px;
             color: white;
         }
         ul {
@@ -48,7 +56,7 @@
 </head>
 <body>
 
-    <div id="capture">
+    <div id="capture" typist>
         <h4 id="title">
             <img src="https://s.gravatar.com/avatar/500e3c86a5425f2fd6ace652cb693f61?s=480&r=pg&d=https%3A%2F%2Fcdn.auth0.com%2Favatars%2Fch.png"
                 alt="avatar" 
@@ -63,7 +71,7 @@
             ChatGPT
         </h4>
 
-        <div typist>
+        <div type-effect>
             <p>Creating metadata tags for an image involves categorizing content based on various attributes such as the subject matter, location, and the nature of the event depicted. The IPTC Newscodes provide a standardized vocabulary for classifying news content. For this image, here are appropriate metadata tags using the IPTC Newscodes controlled vocabulary:</p>
 
                 <ul>
@@ -83,9 +91,10 @@
         </div>
     </div>
 
-    <h2>Target:</h2>
-    <div id="target"></div>
-
-    <script src="typist.js"></script> 
+    <script>
+        document.addEventListener('typist-ready', function (e) {
+            startTypist();
+        });
+    </script>
 </body>
 </html>
