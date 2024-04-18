@@ -16,6 +16,16 @@
         .pastedimg {
             width: 300px;
         }
+        #cursor {
+            display: inline-block;
+            vertical-align : baseline;
+            margin-left : 4px;
+            color : white;
+            transform: translateY(1px);
+        }
+        #cursor svg path {
+            fill: white;
+        }
         h4 {
             font-family: Arial;
             font-weight: 600;
@@ -102,7 +112,7 @@
 
                     var {type, text, string} = typeQueue[0];
 
-                    var numLetters = Math.floor(Math.random() * 3) + 1;
+                    var numLetters = Math.floor(Math.random() * 4) + 1;
                     
                     text.textContent += string.substring(0, numLetters);
                     typeQueue[0].string = string.slice(numLetters);
@@ -115,18 +125,18 @@
                     height = Math.floor(height * 0.8);
                     console.log(height);
 
-                    if ( text.parentNode.querySelector("#dot") == null ) {
+                    if ( text.parentNode.querySelector("#cursor") == null ) {
                         const dot = document.createElement("span");
                         dot.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"/></svg>';
-                        dot.id = "dot";
-                        dot.className = "dot";
+                        dot.id = "cursor";
+                        dot.className = "cursor";
                         dot.style.width = `${height}px`;
                         dot.style.height = `${height}px`;
-                        dot.style.display = "inline-block";
-                        dot.style.verticalAlign = "text-middle";
-                        dot.style.marginLeft = "4px";
-                        dot.style.color = "white";
-                        dot.querySelector("svg path").style.fill = "white";
+                        // dot.style.display = "inline-block";
+                        // dot.style.verticalAlign = "text-middle";
+                        // dot.style.marginLeft = "4px";
+                        // dot.style.color = "white";
+                        // dot.querySelector("svg path").style.fill = "white";
                         text.parentNode.appendChild(dot);
                     }
                     
@@ -134,7 +144,7 @@
                         typeQueue.shift();
 
                         // Remove the dot
-                        const dot = text.parentNode.querySelector("#dot");
+                        const dot = text.parentNode.querySelector("#cursor");
                         if (dot) {
                             dot.parentNode.removeChild(dot);
                         }
