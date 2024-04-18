@@ -101,7 +101,13 @@
 
         typeSomething = () => {
             if (typeQueue.length > 0) {
-                if ( typeQueue[0].type === 'insert' ) {
+
+                if ( typeQueue[0].onfinal != undefined ) {
+
+                    typeQueue[0].onfinal();
+                    typeQueue.shift();
+
+                } else if ( typeQueue[0].type === 'insert' ) {
 
                     var {type, copy, target} = typeQueue[0];
                     target.appendChild(copy);
@@ -127,16 +133,13 @@
 
                     if ( text.parentNode.querySelector("#cursor") == null ) {
                         const dot = document.createElement("span");
+                        
                         dot.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"/></svg>';
                         dot.id = "cursor";
                         dot.className = "cursor";
                         dot.style.width = `${height}px`;
                         dot.style.height = `${height}px`;
-                        // dot.style.display = "inline-block";
-                        // dot.style.verticalAlign = "text-middle";
-                        // dot.style.marginLeft = "4px";
-                        // dot.style.color = "white";
-                        // dot.querySelector("svg path").style.fill = "white";
+
                         text.parentNode.appendChild(dot);
                     }
                     
@@ -199,6 +202,12 @@
             var target = document.getElementById('target');
             duplicateNode(child, target);       
         });
+
+        onfinal = () => {
+            console.log("Done!");
+        }
+
+        typeQueue.push( {onfinal} );
 
         typeSomething();
 
