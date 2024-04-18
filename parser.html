@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typist</title>
-    <link rel="stylesheet" href="xxxreset.css">
+    <link rel="stylesheet" href="reset.css">
     <style>
         #capture, #target {
             padding: 10px;
@@ -32,6 +32,13 @@
         }
         ul {
             list-style-type: square;
+            margin-block-end: 16px;
+            margin-block-start: 10px;
+            margin-inline-end: 0px;
+            margin-inline-start: 0px;
+            margin-inline-start: 0px;
+            margin-top: 10px;
+            padding-inline-start: 40px;
         }
     </style>
 
@@ -53,21 +60,24 @@
             ChatGPT
         </h4>
 
-        <p>Creating metadata tags for an image involves categorizing content based on various attributes such as the subject matter, location, and the nature of the event depicted. The IPTC Newscodes provide a standardized vocabulary for classifying news content. For this image, here are appropriate metadata tags using the IPTC Newscodes controlled vocabulary:</p>
-<ul>
-<li>Subject Code: pol (for politics)</li>
-<li>Scene Code: inpr (indoor, press room)</li>
-<li>Location Code: osl (for Oslo, if this event is in Oslo as the flags may suggest)</li>
-<li>Urgency Code: 5 (normal urgency, assuming this is a standard meeting)</li>
-<li>Genre Code: Press Conference, Speech</li>
-<li>Feature Code: GOVELE (government election, if relevant), GOVGEN (general government activity)</li>
-<li>Style Code: POSHUM (posed, human)</li>
-<li>Language Code: eng (assuming the primary language in use at the event is English)</li>
-<li>Further classification could be made based on the specific content of the event if it is known (e.g., a particular bill being discussed, a specific treaty, etc.). The photographer or the news agency responsible for the image would typically provide this detailed information.</li>
-</ul>
+        <div typist>
+            <p>Creating metadata tags for an image involves categorizing content based on various attributes such as the subject matter, location, and the nature of the event depicted. The IPTC Newscodes provide a standardized vocabulary for classifying news content. For this image, here are appropriate metadata tags using the IPTC Newscodes controlled vocabulary:</p>
 
-        <p>Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.</p>
-        <p>Morbi in sem quis dui placerat ornare. Pellentesque odio nisi euismod in pharetra a ultricies in diam. Sed arcu. Cras consequat.</p>
+                <ul>
+                <li>Subject Code: pol (for politics)</li>
+                <li>Scene Code: inpr (indoor, press room)</li>
+                <li>Location Code: osl (for Oslo, if this event is in Oslo as the flags may suggest)</li>
+                <li>Urgency Code: 5 (normal urgency, assuming this is a standard meeting)</li>
+                <li>Genre Code: Press Conference, Speech</li>
+                <li>Feature Code: GOVELE (government election, if relevant), GOVGEN (general government activity)</li>
+                <li>Style Code: POSHUM (posed, human)</li>
+                <li>Language Code: eng (assuming the primary language in use at the event is English)</li>
+                <li>Further classification could be made based on the specific content of the event if it is known (e.g., a particular bill being discussed, a specific treaty, etc.). The photographer or the news agency responsible for the image would typically provide this detailed information.</li>
+                </ul>
+
+            <p>Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.</p>
+            <p>Morbi in sem quis dui placerat ornare. Pellentesque odio nisi euismod in pharetra a ultricies in diam. Sed arcu. Cras consequat.</p>
+        </div>
     </div>
 
     <h2>Target:</h2>
@@ -86,17 +96,50 @@
                     var {type, copy, target} = typeQueue[0];
                     target.appendChild(copy);
                     typeQueue.shift();
-                    setTimeout(typeSomething, typeSpeed);
+                    typeSomething();
 
                 } else {
 
                     var {type, text, string} = typeQueue[0];
 
-                    text.textContent += string[0];
-                    typeQueue[0].string = string.slice(1);
+                    var numLetters = Math.floor(Math.random() * 3) + 1;
+                    
+                    text.textContent += string.substring(0, numLetters);
+                    typeQueue[0].string = string.slice(numLetters);
+
+                    // find the computed font size for this element
+                    var computedStyle = window.getComputedStyle(text.parentNode);
+                    var fontSize = computedStyle.getPropertyValue('font-size');
+                    var lineHeight = computedStyle.getPropertyValue('line-height');
+                    var height = parseInt(lineHeight) || parseInt(fontSize);
+                    height = Math.floor(height * 0.8);
+                    console.log(height);
+
+                    if ( text.parentNode.querySelector("#dot") == null ) {
+                        const dot = document.createElement("span");
+                        dot.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"/></svg>';
+                        dot.id = "dot";
+                        dot.className = "dot";
+                        dot.style.width = `${height}px`;
+                        dot.style.height = `${height}px`;
+                        dot.style.display = "inline-block";
+                        dot.style.verticalAlign = "text-middle";
+                        dot.style.marginLeft = "4px";
+                        dot.style.color = "white";
+                        dot.querySelector("svg path").style.fill = "white";
+                        text.parentNode.appendChild(dot);
+                    }
+                    
                     if (typeQueue[0].string.length === 0) {
                         typeQueue.shift();
+
+                        // Remove the dot
+                        const dot = text.parentNode.querySelector("#dot");
+                        if (dot) {
+                            dot.parentNode.removeChild(dot);
+                        }
                     }
+
                     randomDelay = Math.abs(typeSpeed * (Math.cos(text.textContent.length)) + (typeSpeed ** Math.random()));
                     setTimeout(typeSomething, randomDelay);
 
@@ -104,10 +147,22 @@
             }
         }
 
+        anyParentHasAttribute = (node, attr) => {
+            if (node.hasAttribute != undefined && node.hasAttribute(attr)) {
+                return true;
+            }
+
+            if (node.parentNode != null) {
+                return anyParentHasAttribute(node.parentNode, attr);
+            }
+
+            return false;
+        }
+
         duplicateNode = (node, target) => {
             var copy = node.cloneNode(false);
-
-            if ( node.nodeName === '#text' ) {
+            
+            if ( node.nodeName === '#text' && anyParentHasAttribute(node, 'typist') ) {
                 var string = node.textContent;
                 
                 var text = document.createTextNode("");
