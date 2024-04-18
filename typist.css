@@ -1,0 +1,11 @@
+
+#cursor {
+    display: inline-block;
+    vertical-align : baseline;
+    margin-left : 4px;
+    color : white;
+    transform: translateY(1px);
+}
+#cursor svg path {
+    fill: white;
+}
